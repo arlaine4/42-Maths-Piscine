@@ -1,15 +1,17 @@
 operators = ['!', '|', '^', '&', '>', '=']
+tmp = ''
 from copy import deepcopy
 
 
 class Node:
-	def	__init__(self, elem_val, l=None, r=None):
+	def	__init__(self, elem_val, l=None, r=None, bool_neg=False):
 		self.elem = elem_val
 		self.l = l
 		self.r = r
 		self.res = None
 
 	def	get_res(self):
+		global tmp
 		if self.elem == '|':
 			self.res = int(self.l.elem) | int(self.r.elem)
 		elif self.elem == '&':
@@ -20,22 +22,18 @@ class Node:
 			self.res = int(self.l.elem) == int(self.r.elem)
 		elif self.elem == '>':
 			self.res = int(self.l.elem) == int(self.r.elem)
-		elif self.elem == '!':
-			if self.l is None:
-				self.res = int(self.r.elem) * -1
-			elif self.r is None:
-				self.res = int(self.l.elem) * -1
+		elif tmp == '!':
+			self.res = True if self.res is False else False
 		self.res = True if self.res == 1 else False
 
 	def	__str__(self):
-		return '{0}->left : {1}\n{0}->right : {2}\t {1} res : {3}'.format(self.elem, self.l, self.r, self.res)
-#		return '{}->left : {}\n{}->right : {}'.format(self.elem, self.l, self.elem, self.r)
+		return '{0}->left : {1}\n{0}->right : {2}'.format(self.elem, self.l, self.r)
 
 def	build_node(stack):
 	node_inst = Node(stack[0])
 	if len(stack) >= 2:
 		node_inst.l = Node(stack[1])
-		if len(stack) >= 3:
+		if len(stack) >= 3 and stack[0] != '!':
 			node_inst.r = Node(stack[2])
 	return node_inst
 
@@ -50,9 +48,11 @@ def	update_stack(stack):
 
 def	build_new_root(elem, node, stack):
 	node_inst = Node(elem)
-	if len(stack) >= 2:
+	if elem == '!' and len(stack) >= 1:
 		node_inst.l = node
-		if len(stack) >= 2:
+	elif len(stack) >= 2:
+		node_inst.l = node
+		if len(stack) >= 2 and stack[0] != '!':
 			node_inst.r = Node(stack[-1])
 	return node_inst
 
@@ -68,15 +68,17 @@ def	parse_rpn(rpn):
 			else:
 				stack.insert(0, elem)
 				new_node = build_new_root(elem, node, stack)
-				node = deepcopy(new_node)
+				node = new_node
 				stack = update_stack(stack)
 		else:
 			stack.append(elem)
+	print(node)
 	eval_node(node)
 
 
 def	eval_node(node):
-	if node.elem in operators:
+	global tmp
+	if node.elem in operators and node.elem != '!':
 		if node.l.elem in operators:
 			return eval_node(node.l)
 		if node.r.elem in operators:
@@ -85,8 +87,16 @@ def	eval_node(node):
 			return eval_node(node.r)
 		if node.r.elem not in operators and node.l.elem in operators:
 			return eval_node(node.l)
-		elif node.l.elem not in operators and node.l.elem not in operators:
+		elif node.l.elem not in operators and node.r.elem not in operators:
 			node.get_res()
 			node.elem = node.res
+	if node.elem == '!':
+		tmp = '!'
+		return eval_node(node.l)
+	if tmp == '!':
+		node.get_res()
+		node.elem = node.res
+		tmp =''
 	res = str(node.elem)
 	print("#", res.lower())
+
