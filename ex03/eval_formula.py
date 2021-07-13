@@ -86,31 +86,26 @@ def	parse_rpn(rpn):
                     stack = update_stack(stack)
             else:
                 stack.append(elem)
-        print_node(node)
+        # print_node(node)
         eval_node(node)
 
-
-def	eval_node(node):
-	global tmp
-	if node.elem in operators and node.elem != '!':
-		if node.l.elem in operators:
-			return eval_node(node.l)
-		if node.r.elem in operators:
-			return eval_node(node.r)
-		if node.l.elem not in operators and node.r.elem in operators:
-			return eval_node(node.r)
-		if node.r.elem not in operators and node.l.elem in operators:
-			return eval_node(node.l)
-		elif node.l.elem not in operators and node.r.elem not in operators:
-			node.get_res()
-			node.elem = node.res
-	if node.elem == '!':
-		tmp = '!'
-		return eval_node(node.l)
-	if tmp == '!':
-		node.get_res()
-		node.elem = node.res
-		tmp =''
-	res = str(node.elem)
-	print("#", res.lower())
+def eval_node(node):
+    global tmp
+    if node.elem in operators and node.elem != '!':
+        if node.l.elem in operators:
+            return eval_node(node.l)
+        if node.r.elem in operators:
+            return eval_node(node.r)
+    if node.elem != '!' and node.l.elem not in operators and node.r.elem not in operators:
+        node.get_res()
+        node.elem = node.res
+    if node.elem == '!':
+        tmp = '!'
+        return eval_node(node.l)
+    if tmp == '!':
+        node.get_res()
+        node.elem = node.res
+        tmp = ''
+    res = str(node.elem)
+    print('#', res.lower())
 
