@@ -27,7 +27,14 @@ class Node:
 		self.res = True if self.res == 1 else False
 
 	def	__str__(self):
-		return '{0}->left : {1}\n{0}->right : {2}'.format(self.elem, self.l, self.r)
+                if self.l is not None and self.r is not None:
+                        return '{0} -> left : {1}\n{0} -> right : {2}'.format(self.elem, self.l.elem, self.r.elem)
+                elif self.l is not None and self.r is None:
+                        return '{} -> left : {}'.format(self.elem, self.l.elem)
+                elif self.l is None and self.r is not None:
+                        return '{} -> right : {}'.format(self.elem, self.r.elem)
+                else:
+                    return '{0} -> left : Ast end\n{0} -> right : Ast end'.format(self.elem)
 
 def	build_node(stack):
 	node_inst = Node(stack[0])
@@ -46,6 +53,13 @@ def	update_stack(stack):
 			stack.pop(1)
 	return stack
 
+def     print_node(node):
+        print(node)
+        if node.l is not None:
+            return print_node(node.l)
+        if node.r is not None:
+            return print_node(node.r)
+
 def	build_new_root(elem, node, stack):
 	node_inst = Node(elem)
 	if elem == '!' and len(stack) >= 1:
@@ -57,23 +71,23 @@ def	build_new_root(elem, node, stack):
 	return node_inst
 
 def	parse_rpn(rpn):
-	stack = []
-	node = None
-	for elem in rpn:
-		if elem in operators:
-			if node is None:
-				stack.insert(0, elem)
-				node = build_node(stack)
-				stack = update_stack(stack)
-			else:
-				stack.insert(0, elem)
-				new_node = build_new_root(elem, node, stack)
-				node = new_node
-				stack = update_stack(stack)
-		else:
-			stack.append(elem)
-	print(node)
-	eval_node(node)
+        stack = []
+        node = None
+        for elem in rpn:
+            if elem in operators:
+                if node is None:
+                    stack.insert(0, elem)
+                    node = build_node(stack)
+                    stack = update_stack(stack)
+                else:
+                    stack.insert(0, elem)
+                    new_node = build_new_root(elem, node, stack)
+                    node = new_node
+                    stack = update_stack(stack)
+            else:
+                stack.append(elem)
+        print_node(node)
+        eval_node(node)
 
 
 def	eval_node(node):
