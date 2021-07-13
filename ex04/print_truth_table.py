@@ -1,6 +1,33 @@
 from copy import deepcopy
 operators = ['^', '!', '|', '&', '=', '>']
 
+"""
+With this exercice, we take as parameter an rpn (reverse polish notation)
+formula, and we need to build a truth table from it.
+We use cartesian product in order to get all the possible combinations
+for this equation, then feed it to a solving method, and print each combination
+with the associated result.
+
+ex:     AB&C| : cartesien product with 0 and 1 as possible state
+                and a repetition of 3 (the number of operands inside the rpn)
+                ->  possibilities = [(0, 0, 0), (0, 0, 1), (0, 1, 1),
+                                     (1, 1, 1), (1, 0, 1), (1, 0, 0),
+                                     (1, 1, 0), (1, 0, 0)]
+                                     
+                wich gives us the following truth table:
+                
+                | A | B | C |   |
+                |---|---|---|---|
+                | 0 | 0 | 0 | 0 |
+                | 0 | 0 | 1 | 1 |
+                | 0 | 1 | 0 | 0 |
+                | 0 | 1 | 1 | 1 |
+                | 1 | 0 | 0 | 0 |
+                | 1 | 0 | 1 | 1 |
+                | 1 | 1 | 0 | 1 |
+                | 1 | 1 | 1 | 1 |
+"""
+
 def product(*args, repeat=1):
 	# product('ABCD', 'xy') --> Ax Ay Bx By Cx Cy Dx Dy
 	# product(range(2), repeat=3) --> 000 001 010 011 100 101 110 111
@@ -67,6 +94,9 @@ def     update_stack(stack, elem):
                 res = 0
             else:
                 res = 1
+        elif elem == '!':
+            res = stack.pop()
+            res = 0 if res == 1 else 1
         stack.append(res)
         return stack
 
