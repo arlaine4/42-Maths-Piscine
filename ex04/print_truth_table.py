@@ -1,5 +1,5 @@
-import eval_formula as evl
 from copy import deepcopy
+operators = ['^', '!', '|', '&', '=', '>']
 
 def product(*args, repeat=1):
 	# product('ABCD', 'xy') --> Ax Ay Bx By Cx Cy Dx Dy
@@ -50,6 +50,37 @@ def	print_truth_table(elems, combi, res):
 		print(line)
 
 
+def     update_stack(stack, elem):
+        res2 = None
+        if elem == '&':
+            res = int(stack.pop() & stack.pop())
+        elif elem == '|':
+            res = int(stack.pop() | stack.pop())
+        elif elem == '^':
+            res = int(stack.pop() ^ stack.pop())
+        elif elem == '=':
+            res = int(stack.pop() == stack.pop())
+        elif elem == '>':
+            res = stack.pop()
+            res2 = stack.pop()
+            if res2 == 0 and res == 1:
+                res = 0
+            else:
+                res = 1
+        stack.append(res)
+        return stack
+
+
+def     parse_rpn(rpn):
+        stack = []
+        for elem in rpn:
+            if elem not in operators:
+                stack.append(elem)
+            else:
+                stack = update_stack(stack, elem)
+        return stack[0]
+
+
 def	get_truth_table(rpn):
 	elems = get_elems_from_rpn(rpn)
 	combi = product(range(2), repeat=len(elems))
@@ -60,7 +91,7 @@ def	get_truth_table(rpn):
 			tmp = next(combi)
 			lst_comb.append(deepcopy(tmp))
 			eq_replaced = replace_eq_elems_with_combi(rpn, tmp)
-			res.append(evl.parse_rpn(eq_replaced))
+			res.append(parse_rpn(eq_replaced))
 		except:
 			break
 	while 1:
