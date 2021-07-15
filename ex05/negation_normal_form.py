@@ -1,100 +1,66 @@
 operators = ['!', '|', '^', '&', '>', '=']
-tmp = ''
 from copy import deepcopy
 
 
-class Node:
-    def	__init__(self, elem_val, l=None, r=None, bool_neg=False):
-        self.elem = elem_val
-        self.l = l
-        self.r = r
-
-    def convert_node_to_nnf(self):
-        if self.elem == '&':
-           self.l.elem += '!'
-           self.r.elem += '!'
-           self.elem = '|'
-        elif self.elem == '|':
-           self.l.elem += '!'
-           self.r.elem += '!'
-           self.elem = '&'
-
-    def	__str__(self):
-        if self.l is not None and self.r is not None:
-            return '{0} -> left : {1}\n{0} -> right : {2}'.format(self.elem, self.l.elem, self.r.elem)
-        elif self.l is not None and self.r is None:
-            return '{} -> left : {}'.format(self.elem, self.l.elem)
-        elif self.l is None and self.r is not None:
-            return '{} -> right : {}'.format(self.elem, self.r.elem)
-        return '{0} -> left : Ast end\n{0} -> right : Ast end'.format(self.elem)
+def convert_op_to_nnf(ope):
+    if ope == '|':
+        return '&'
+    elif ope == '&' or ope == '>':
+        return '|'
 
 
-def	build_node(stack):
-	node_inst = Node(stack[0])
-	if len(stack) >= 2:
-		node_inst.l = Node(stack[1])
-		if len(stack) >= 3 and stack[0] != '!':
-			node_inst.r = Node(stack[2])
-	return node_inst
+def handle_equality_ope(el1, el2):
+    bool_el1 = True if el1 is not None else False
+    bool_el2 = True if el2 is not None else False
+    new_elem = ''
+    if bool_el2:
+        new_elem += el2
+    if bool_el1:
+        new_elem += el1
+    new_elem += '&'
+    if bool_el2:
+        new_elem += el2 + '!'
+    if bool_el1:
+        new_elem += el1 + '!'
+    new_elem += '&|'
+    return new_elem
 
 
-def	update_stack(stack):
-	if len(stack) >= 2:
-		if stack[1] and stack[1] not in operators:
-			stack.pop(1)
-	if len(stack) >= 2:
-		if stack[1] and stack[1] not in operators:
-			stack.pop(1)
-	return stack
+def format_new_nnf_elem(ope, el1, el2):
+    new_elem = ''
+    if ope != '=':
+        if el2 is not None:
+            new_elem += el2 + '!'
+        if el1 is not None:
+            new_elem += el1
+            if ope != '>':
+                new_elem += '!'
+        new_elem += convert_op_to_nnf(ope) if ope != '!' else ''
+    elif ope == '=':
+        new_elem = handle_equality_ope(el1, el2)
+    return new_elem
 
 
-def	print_node(node):
-	print(node)
-	if node.l is not None:
-		return print_node(node.l)
-	if node.r is not None:
-		return print_node(node.r)	
+def update_stack(stack, operator):
+    new_elem = ''
+    elem1 = None
+    elem2 = None
+    if len(stack[-1]) == 1:
+        elem1 = stack.pop()
+    if len(stack[-1]) == 1:
+        elem2 = stack.pop()
+    new_elem = format_new_nnf_elem(operator, elem1, elem2)
+    stack.append(new_elem)
+    return stack
 
 
-def	build_new_root(elem, node, stack):
-	node_inst = Node(elem)
-	if elem == '!' and len(stack) >= 1:
-		node_inst.l = node
-	elif len(stack) >= 2:
-		node_inst.l = node
-		if len(stack) >= 2 and stack[0] != '!':
-			node_inst.r = Node(stack[-1])
-	return node_inst
-
-
-def convert_ast_rpn_to_nnf(node):
-    print("elem : ", node.elem)
-    if node.elem in operators:
-        if node.l.elem in operators:
-            return convert_ast_rpn_to_nnf(node.l)
-        if node.r.elem in operators:
-            return convert_ast_rpn_to_nnf(node.r)
-        if node.l.elem not in operators and node.r.elem not in operators:
-            node.convert_node_to_nnf()
-
-    return node
-
-
-def	parse_rpn(rpn):
+def parse_rpn(rpn):
     stack = []
-    node = None
     for elem in rpn:
-        if elem in operators:
-            if node is None:
-                stack.insert(0, elem)
-                node = build_node(stack)
-                stack = update_stack(stack)
-            else:
-                stack.insert(0, elem)
-                new_node = build_new_root(elem, node, stack)
-                node = new_node
-                stack = update_stack(stack)
-        else:
+        if elem not in operators:
             stack.append(elem)
-    nnf_rpn = convert_ast_rpn_to_nnf(node)
+        else:
+            stack = update_stack(stack, elem)
+    nnf = ''.join(map(str, stack))
+    print(nnf)
 
