@@ -127,7 +127,6 @@ def parse_rpn(rpn):
                 stack = update_stack(stack)
         else:
             stack.append(elem)
-    print_node(node)
     eval_node(node)
 
 def eval_node(node):
