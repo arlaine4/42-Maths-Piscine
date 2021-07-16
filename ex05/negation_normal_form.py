@@ -1,4 +1,4 @@
-operators = ['!', '|', '^', '&', '>', '=']
+operators = ['!', '|', '&', '>', '=']
 from copy import deepcopy
 
 
