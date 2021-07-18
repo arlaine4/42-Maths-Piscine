@@ -3,7 +3,10 @@ import vector
 import matrix
 
 def convert_arg_to_list(arg):
-    return [float(elem) for elem in arg]
+    try:
+        return [float(elem) for elem in arg]
+    except:
+        sys.exit("Invalid content inside {}".format(arg))
 
 if __name__ == "__main__":
     try:
@@ -18,8 +21,8 @@ if __name__ == "__main__":
         sys.exit("Invalid Matricies")
 
     print("\nVector tests : ", end='\n\n')
-    v = vector.vector(convert_arg_to_list(vector1))
-    v2 = vector.vector(convert_arg_to_list(vector2))
+    v = vector.Vector(convert_arg_to_list(vector1))
+    v2 = vector.Vector(convert_arg_to_list(vector2))
 
     #--------------------------------------------#
     #               Vector part                  #

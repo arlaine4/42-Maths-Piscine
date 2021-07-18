@@ -30,17 +30,29 @@ def try_convert_float(u, v, t, mode):
     return u, v, t
 
 
+def interpol_calcul(_max, _min, t):
+    res = (float(_max) * t) + ((1 - t) * float(_min))
+    return round(res, 1)
+
 def lerp_vector(u, v, t):
-    res = []
+    res = [None for i in range(len(u))]
+    for i in range(len(u)):
+        res[i] = interpol_calcul(max([u[i], v[i]]), min([u[i], v[i]]), t)
     return res
 
 
 def lerp_matrix(u, v, t):
     res = []
+    for i in range(len(u)):
+        res.append([])
+        for j in range(len(v)):
+            print(u[i][j], v[i][j],t,  float(v[i][j]) * t)
+            res[i].append(interpol_calcul(u[i][j], v[i][j], t))
     return res
 
 
 def lerp(u, v, t):
+    mode = 'simple'
     if type(u) is Vector and type(v) is Vector:
         mode = 'vector'
     elif type(u) is Matrix and type(v) is Matrix:
@@ -48,23 +60,12 @@ def lerp(u, v, t):
     elif type(u) is Matrix and type(v) is Vector or\
             type(u) is Vector and type(v) is Matrix:
                 sys.exit("Conflicting types between u and v")
-    else:
-        mode = 'simple'
     if mode == 'simple':
         u, v, t = try_convert_float(u, v, t, mode)
-        if t == 0:
-            return min([u, v])
-        elif t == 1:
-            return max([u, v])
-        elif t == 0.5:
-            return (max([u, v]) - min([u, v])) * 0.5
-        else:
-            res = max([u, v]) - min([u, v])
-            res = res + (res * t)
-        return res
+        res = interpol_calcul(max([u, v]), min([u, v]), t)
     elif mode == 'vector':
         u, v, t = try_convert_float(u, v, t, mode)
         res = lerp_vector(u, v, t)
     elif mode == 'matrix':
-        res = lerp_matrix(u, v, t)
+        res = lerp_matrix(u.matrix, v.matrix, t)
     return res
