@@ -1,7 +1,16 @@
+from copy import deepcopy
+
 class Vector:
     def __init__(self, v):
         self.vector = v
+        self.format_vector()
         self.cosin = None
+
+    def format_vector(self):
+        new_v = deepcopy(vector)
+        for i in range(len(self.vector)):
+            new_v[i] = float(self.vector[i])
+        self.vector = new_v
 
     def __str__(self):
         return f'{self.vector}'

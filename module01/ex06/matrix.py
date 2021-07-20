@@ -1,17 +1,22 @@
 import sys
 import numpy as np
+from copy import deepcopy
 
 class Matrix:
-    def __init__(self, m):
+    def __init__(self, m, nb_brackets):
         self.matrix = m
+        self.nb_brackets = nb_brackets
         self.format_matrix()
 
     def format_matrix(self):
-        if len(self.matrix) % 2 != 0 or len(self.matrix) == 0:
+        if len(self.matrix) == 0:
             sys.exit("Invalid matrix {}".format(self.matrix))
-        len_line = int(len(self.matrix)**0.5)
+        len_line = len(self.matrix) / self.nb_brackets
+        if not len_line.is_integer():
+            sys.exit("Invalid matrix {}".format(self.matrix))
         new_m = np.array(self.matrix)
-        new_m = np.reshape(new_m, (len_line, len_line))
+        new_m = [float(elem) for elem in new_m]
+        new_m = np.reshape(new_m, (int(len_line), int(self.nb_brackets)))
         self.matrix = new_m
 
     def __str__(self):
