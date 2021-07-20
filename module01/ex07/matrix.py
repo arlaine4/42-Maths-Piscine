@@ -7,6 +7,7 @@ class Matrix:
         self.matrix = m
         self.nb_brackets = nb_brackets
         self.format_matrix()
+        self.matrix_trace = 0
 
     def format_matrix(self):
         if len(self.matrix) == 0:
@@ -37,3 +38,7 @@ class Matrix:
             for j in range(len(self.matrix)):
                 self.matrix[i][j] /= other.matrix[i][j]
                 self.matrix[i][j] = round(self.matrix[i][j], 2)
+
+    def trace(self):
+        for i in range(0, self.matrix.shape[1], 1):
+            self.matrix_trace += self.matrix[i][i]

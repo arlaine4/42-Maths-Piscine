@@ -1,6 +1,5 @@
 import sys
 from matrix import Matrix
-import trace
 
 def check_args(args):
     if len(args) != 2:
@@ -26,5 +25,6 @@ if __name__ == "__main__":
         m = Matrix(elem, nb_brackets)
     except:
         sys.exit("Error occured during matrix creation")
-    print(trace.trace(m.matrix))
+    m.trace()
+    print(m.matrix_trace)
 
