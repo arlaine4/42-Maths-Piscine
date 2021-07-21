@@ -40,6 +40,8 @@ def mul_vec(elem1, elem2):
         res = multiply_matrix_by_vec(elem1.vector, elem2.matrix)
     elif type(elem1) is Matrix and type(elem2) is Vector:
         res = multiply_matrix_by_vec(elem2.vector, elem1.matrix)
-    else:
+    elif type(elem1) is Matrix and type(elem2) is Matrix:
         res = multiply_matrix_matrix(elem1.matrix, elem2.matrix)
+    else:
+        sys.exit("Vector by Vector multiplication not supported for this exercice")
     return res
